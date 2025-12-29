@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import MonkeyBall from './games/MonkeyBall'
 import Snake from './games/Snake'
 import SpaceInvaders from './games/SpaceInvaders'
 import HighwayRacer from './games/HighwayRacer'
@@ -8,15 +7,6 @@ import Tetris from './games/Tetris'
 import './App.css'
 
 const GAMES = [
-  {
-    id: 'monkey-ball',
-    name: '🎮 Downhill Balance',
-    description: 'Balance the ball down the hill!',
-    component: MonkeyBall,
-    color: '#4ECDC4',
-    difficulty: 'Medium',
-    players: '1'
-  },
   {
     id: 'snake',
     name: '🐍 Classic Snake',
