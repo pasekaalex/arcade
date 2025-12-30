@@ -35,6 +35,31 @@
 .arcade-header {
   text-align: center;
   margin-bottom: 50px;
+  position: relative;
+}
+
+.back-to-intro-button {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 20px;
+  border-radius: 12px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-weight: 600;
+  backdrop-filter: blur(10px);
+  font-family: inherit;
+}
+
+.back-to-intro-button:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+  transform: translateX(-3px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 .arcade-title {
@@ -472,6 +497,15 @@ h1 {
   
   h1 {
     font-size: 2em;
+  }
+  
+  .back-to-intro-button {
+    position: relative;
+    margin-bottom: 20px;
+    width: 100%;
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
   }
   
   .container {

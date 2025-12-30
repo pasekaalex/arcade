@@ -97,6 +97,11 @@ function App() {
     localStorage.setItem('hasSeenIntro', 'true')
   }
 
+  const handleBackToIntro = () => {
+    setShowIntro(true)
+    setSelectedGame(null)
+  }
+
   const handleGameSelect = (game) => {
     setSelectedGame(game)
     // Update stats
@@ -141,9 +146,16 @@ function App() {
   }
 
   return (
-    <div className="app arcade-menu">
+      <div className="app arcade-menu">
       <div className="arcade-container">
         <div className="arcade-header">
+          <button 
+            className="back-to-intro-button"
+            onClick={handleBackToIntro}
+            title="Back to Main Menu"
+          >
+            ← Back to Main Menu
+          </button>
           <h1 className="arcade-title">🎮 React Arcade</h1>
           <p className="arcade-subtitle">Choose a game to play!</p>
           {stats.totalGames > 0 && (
