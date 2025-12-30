@@ -151,7 +151,47 @@ function IsometricCity() {
   const [isEditingName, setIsEditingName] = useState(false)
   const [showToolsPanel, setShowToolsPanel] = useState(window.innerWidth > 768)
   const [showInfoPanel, setShowInfoPanel] = useState(window.innerWidth > 768)
+  const [selectedBuilding, setSelectedBuilding] = useState(null)
+  const [showUpgradeMenu, setShowUpgradeMenu] = useState(false)
   const gridRef = useRef(null)
+  const gridForSaveRef = useRef(grid)
+  
+  // Update ref when grid changes
+  useEffect(() => {
+    gridForSaveRef.current = grid
+  }, [grid])
+  
+  // Load saved game
+  useEffect(() => {
+    const saved = localStorage.getItem('isometricCitySave')
+    if (saved) {
+      try {
+        const data = JSON.parse(saved)
+        if (data.grid) setGrid(data.grid)
+        if (data.money) setMoney(data.money)
+        if (data.day) setDay(data.day)
+        if (data.cityName) setCityName(data.cityName)
+        if (data.achievements) setAchievements(data.achievements)
+      } catch (e) {
+        console.error('Failed to load save:', e)
+      }
+    }
+  }, [])
+  
+  // Auto-save every 10 seconds
+  useEffect(() => {
+    const saveInterval = setInterval(() => {
+      const saveData = {
+        grid: gridForSaveRef.current,
+        money,
+        day,
+        cityName,
+        achievements
+      }
+      localStorage.setItem('isometricCitySave', JSON.stringify(saveData))
+    }, 10000)
+    return () => clearInterval(saveInterval)
+  }, [money, day, cityName, achievements])
   
   // Update panel visibility on window resize
   useEffect(() => {
@@ -180,9 +220,10 @@ function IsometricCity() {
       row.forEach(cell => {
         if (cell) {
           const type = BUILDING_TYPES[cell.type]
-          if (type.population) totalPopulation += type.population
-          if (type.income) totalIncome += type.income
-          if (type.happiness) totalHappiness += type.happiness
+          const levelMultiplier = 1 + (cell.level - 1) * 0.5 // 50% increase per level
+          if (type.population) totalPopulation += Math.floor(type.population * levelMultiplier)
+          if (type.income) totalIncome += Math.floor(type.income * levelMultiplier)
+          if (type.happiness) totalHappiness += Math.floor(type.happiness * levelMultiplier)
           if (cell.type === 'park') parkCount++
           buildingCount++
         }
@@ -229,17 +270,58 @@ function IsometricCity() {
 
   // Convert grid coordinates to isometric screen position
   const gridToScreen = (x, y) => {
-    const screenX = (x - y) * (TILE_WIDTH / 2) + (GRID_SIZE * TILE_WIDTH / 2)
-    const screenY = (x + y) * (TILE_HEIGHT / 2) + 50
+    // Grid container is 900x550
+    const containerWidth = 900
+    const containerHeight = 550
+    
+    // Standard isometric projection formula
+    // The center tile should be at the center of the container
+    const centerTileX = Math.floor(GRID_SIZE / 2)
+    const centerTileY = Math.floor(GRID_SIZE / 2)
+    
+    // Calculate offset from center tile
+    const dx = x - centerTileX
+    const dy = y - centerTileY
+    
+    // Isometric transformation
+    // Horizontal: difference between x and y coordinates
+    // Vertical: sum of x and y coordinates
+    const isoX = (dx - dy) * (TILE_WIDTH / 2)
+    const isoY = (dx + dy) * (TILE_HEIGHT / 2)
+    
+    // Center in container (accounting for tile centering transform)
+    const screenX = (containerWidth / 2) + isoX
+    const screenY = (containerHeight / 2) + isoY
+    
     return { screenX, screenY }
+  }
+
+  // Check if tile has road access
+  const hasRoadAccess = (x, y) => {
+    const neighbors = [
+      [x - 1, y], [x + 1, y], [x, y - 1], [x, y + 1]
+    ]
+    return neighbors.some(([nx, ny]) => {
+      if (nx < 0 || nx >= GRID_SIZE || ny < 0 || ny >= GRID_SIZE) return false
+      return grid[ny][nx]?.type === 'road'
+    })
   }
 
   // Handle tile click
   const handleTileClick = (x, y) => {
+    const existingBuilding = grid[y][x]
+    
+    // If clicking on existing building, show upgrade menu
+    if (existingBuilding && !isDeleting && selectedTool === existingBuilding.type) {
+      setSelectedBuilding({ x, y, building: existingBuilding })
+      setShowUpgradeMenu(true)
+      return
+    }
+    
     if (isDeleting) {
-      if (grid[y][x]) {
+      if (existingBuilding) {
         const newGrid = [...grid.map(row => [...row])]
-        const refund = Math.floor(BUILDING_TYPES[grid[y][x].type].cost * 0.5)
+        const refund = Math.floor(BUILDING_TYPES[existingBuilding.type].cost * 0.5 * existingBuilding.level)
         newGrid[y][x] = null
         setGrid(newGrid)
         setMoney(prev => prev + refund)
@@ -250,13 +332,19 @@ function IsometricCity() {
 
     const buildingType = BUILDING_TYPES[selectedTool]
     
-    if (grid[y][x]) {
+    if (existingBuilding) {
       addNotification('Tile already occupied!', 'error')
       return
     }
 
     if (money < buildingType.cost) {
       addNotification('Not enough money!', 'error')
+      return
+    }
+
+    // Check road access for non-road buildings
+    if (selectedTool !== 'road' && !hasRoadAccess(x, y)) {
+      addNotification('Buildings need road access!', 'error')
       return
     }
 
@@ -269,6 +357,36 @@ function IsometricCity() {
     setGrid(newGrid)
     setMoney(prev => prev - buildingType.cost)
     addNotification(`Built ${buildingType.name} for $${buildingType.cost}`, 'success')
+  }
+
+  // Upgrade building
+  const handleUpgrade = () => {
+    if (!selectedBuilding) return
+    
+    const { x, y, building } = selectedBuilding
+    const buildingType = BUILDING_TYPES[building.type]
+    const upgradeCost = Math.floor(buildingType.cost * 1.5 * building.level)
+    
+    if (money < upgradeCost) {
+      addNotification('Not enough money to upgrade!', 'error')
+      return
+    }
+
+    if (building.level >= 5) {
+      addNotification('Building is at max level!', 'error')
+      return
+    }
+
+    const newGrid = [...grid.map(row => [...row])]
+    newGrid[y][x] = {
+      ...building,
+      level: building.level + 1
+    }
+    setGrid(newGrid)
+    setMoney(prev => prev - upgradeCost)
+    addNotification(`Upgraded to level ${building.level + 1}!`, 'success')
+    setShowUpgradeMenu(false)
+    setSelectedBuilding(null)
   }
 
   const addNotification = (message, type) => {
@@ -297,7 +415,7 @@ function IsometricCity() {
           className="building building-road"
           style={{
             left: screenX,
-            top: screenY - 5,
+            top: screenY,
             zIndex: 100 + x + y
           }}
         >
@@ -322,7 +440,7 @@ function IsometricCity() {
           className="building building-park"
           style={{
             left: screenX,
-            top: screenY - 45,
+            top: screenY,
             zIndex: 100 + x + y
           }}
         >
@@ -353,13 +471,14 @@ function IsometricCity() {
     }
 
     // Enhanced 3D building with particles
+    // Use same coordinates as tiles - transform handles alignment
     return (
       <div
         key={`building-${x}-${y}`}
         className={`building building-${cell.type}`}
         style={{
           left: screenX,
-          top: screenY - buildingHeight,
+          top: screenY,
           zIndex: 100 + x + y
         }}
       >
@@ -555,6 +674,11 @@ function IsometricCity() {
               <span className="building-emoji">{type.emoji}</span>
               <div className="emoji-glow"></div>
               <div className="emoji-pulse"></div>
+              {cell.level > 1 && (
+                <div className="building-level-badge">
+                  <span>Lv.{cell.level}</span>
+                </div>
+              )}
             </div>
             
             {/* Rim lighting effect */}
@@ -695,6 +819,43 @@ function IsometricCity() {
           >
             3x
           </button>
+          <button 
+            className="save-btn"
+            onClick={() => {
+              const saveData = { grid, money, day, cityName, achievements }
+              localStorage.setItem('isometricCitySave', JSON.stringify(saveData))
+              addNotification('Game saved!', 'success')
+            }}
+            title="Save Game"
+          >
+            💾
+          </button>
+          <button 
+            className="save-btn"
+            onClick={() => {
+              if (window.confirm('Load saved game? This will replace your current city.')) {
+                const saved = localStorage.getItem('isometricCitySave')
+                if (saved) {
+                  try {
+                    const data = JSON.parse(saved)
+                    setGrid(data.grid || grid)
+                    setMoney(data.money || 2000)
+                    setDay(data.day || 1)
+                    setCityName(data.cityName || 'New Haven')
+                    setAchievements(data.achievements || [])
+                    addNotification('Game loaded!', 'success')
+                  } catch (e) {
+                    addNotification('Failed to load save', 'error')
+                  }
+                } else {
+                  addNotification('No save found', 'error')
+                }
+              }
+            }}
+            title="Load Game"
+          >
+            📂
+          </button>
         </div>
       </div>
 
@@ -829,18 +990,32 @@ function IsometricCity() {
 
           {/* Hover preview */}
           {hoveredTile && !grid[hoveredTile.y][hoveredTile.x] && !isDeleting && (
-            <div
-              className="building-preview"
-              style={{
-                left: gridToScreen(hoveredTile.x, hoveredTile.y).screenX,
-                top: gridToScreen(hoveredTile.x, hoveredTile.y).screenY - (BUILDING_TYPES[selectedTool].height * 15),
-                zIndex: 1000
-              }}
-            >
-              <div className="preview-body">
-                {BUILDING_TYPES[selectedTool].emoji}
+            <>
+              <div
+                className={`building-preview ${selectedTool !== 'road' && !hasRoadAccess(hoveredTile.x, hoveredTile.y) ? 'no-road-access' : ''}`}
+                style={{
+                  left: gridToScreen(hoveredTile.x, hoveredTile.y).screenX,
+                  top: gridToScreen(hoveredTile.x, hoveredTile.y).screenY - (BUILDING_TYPES[selectedTool].height * 15),
+                  zIndex: 1000
+                }}
+              >
+                <div className="preview-body">
+                  {BUILDING_TYPES[selectedTool].emoji}
+                </div>
               </div>
-            </div>
+              {selectedTool !== 'road' && !hasRoadAccess(hoveredTile.x, hoveredTile.y) && (
+                <div
+                  className="road-warning"
+                  style={{
+                    left: gridToScreen(hoveredTile.x, hoveredTile.y).screenX,
+                    top: gridToScreen(hoveredTile.x, hoveredTile.y).screenY + 20,
+                    zIndex: 1001
+                  }}
+                >
+                  ⚠️ Needs Road Access
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
@@ -868,9 +1043,46 @@ function IsometricCity() {
         </div>
       )}
 
+      {/* Upgrade Menu */}
+      {showUpgradeMenu && selectedBuilding && (
+        <div className="upgrade-menu-overlay" onClick={() => { setShowUpgradeMenu(false); setSelectedBuilding(null); }}>
+          <div className="upgrade-menu" onClick={(e) => e.stopPropagation()}>
+            <button className="close-upgrade-btn" onClick={() => { setShowUpgradeMenu(false); setSelectedBuilding(null); }}>×</button>
+            <h3>🏗️ Upgrade Building</h3>
+            <div className="upgrade-info">
+              <div className="building-preview-upgrade">
+                <span style={{ fontSize: '3rem' }}>{BUILDING_TYPES[selectedBuilding.building.type].emoji}</span>
+                <div className="level-badge">Level {selectedBuilding.building.level}</div>
+              </div>
+              <div className="upgrade-stats">
+                <p><strong>{BUILDING_TYPES[selectedBuilding.building.type].name}</strong></p>
+                {selectedBuilding.building.level < 5 ? (
+                  <>
+                    <p>Current Level: {selectedBuilding.building.level}/5</p>
+                    <p>Upgrade Cost: ${Math.floor(BUILDING_TYPES[selectedBuilding.building.type].cost * 1.5 * selectedBuilding.building.level).toLocaleString()}</p>
+                    <p className="upgrade-benefit">
+                      +50% income & population
+                    </p>
+                    <button 
+                      className="upgrade-btn"
+                      onClick={handleUpgrade}
+                      disabled={money < Math.floor(BUILDING_TYPES[selectedBuilding.building.type].cost * 1.5 * selectedBuilding.building.level)}
+                    >
+                      ⬆️ Upgrade to Level {selectedBuilding.building.level + 1}
+                    </button>
+                  </>
+                ) : (
+                  <p className="max-level">🏆 Maximum Level Reached!</p>
+                )}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Instructions */}
       <div className="game-instructions">
-        <p>🖱️ Click tiles to build • 💡 Build residential for population • 🏭 Add jobs with commercial/industrial</p>
+        <p>🖱️ Click tiles to build • 💡 Build roads first • 🏗️ Click building again to upgrade • 🏭 Add jobs with commercial/industrial</p>
       </div>
     </div>
   )

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import Intro from './Intro'
 import Snake from './games/Snake'
 import SpaceInvaders from './games/SpaceInvaders'
 import HighwayRacer from './games/HighwayRacer'
@@ -65,6 +66,7 @@ const GAMES = [
 ]
 
 function App() {
+  const [showIntro, setShowIntro] = useState(true)
   const [selectedGame, setSelectedGame] = useState(null)
   const [stats, setStats] = useState({
     totalGames: 0,
@@ -73,6 +75,12 @@ function App() {
   })
 
   useEffect(() => {
+    // Check if user has seen intro before
+    const hasSeenIntro = localStorage.getItem('hasSeenIntro')
+    if (hasSeenIntro === 'true') {
+      setShowIntro(false)
+    }
+    
     // Load stats from localStorage
     const savedStats = localStorage.getItem('arcadeStats')
     if (savedStats) {
@@ -84,6 +92,11 @@ function App() {
     }
   }, [])
 
+  const handleEnterArcade = () => {
+    setShowIntro(false)
+    localStorage.setItem('hasSeenIntro', 'true')
+  }
+
   const handleGameSelect = (game) => {
     setSelectedGame(game)
     // Update stats
@@ -94,6 +107,11 @@ function App() {
     }
     setStats(newStats)
     localStorage.setItem('arcadeStats', JSON.stringify(newStats))
+  }
+
+  // Show intro page first
+  if (showIntro) {
+    return <Intro onEnter={handleEnterArcade} />
   }
 
   if (selectedGame) {
