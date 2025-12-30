@@ -88,13 +88,45 @@
 .name-title {
   font-size: clamp(3rem, 8vw, 5rem);
   font-weight: 800;
-  margin: 0 0 40px 0;
+  margin: 0 0 30px 0;
   background: linear-gradient(135deg, #00f5ff 0%, #bf00ff 50%, #ff6b00 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   letter-spacing: -2px;
   animation: fade-in 1s ease-out;
+}
+
+.profile-pic {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin: 0 auto 30px;
+  display: block;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 
+    0 0 30px rgba(0, 245, 255, 0.3),
+    0 0 60px rgba(191, 0, 255, 0.2),
+    inset 0 0 20px rgba(255, 255, 255, 0.1);
+  animation: fade-in 1s ease-out 0.2s both, profile-glow 3s ease-in-out infinite;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes profile-glow {
+  0%, 100% {
+    box-shadow: 
+      0 0 30px rgba(0, 245, 255, 0.3),
+      0 0 60px rgba(191, 0, 255, 0.2),
+      inset 0 0 20px rgba(255, 255, 255, 0.1);
+  }
+  50% {
+    box-shadow: 
+      0 0 40px rgba(0, 245, 255, 0.5),
+      0 0 80px rgba(191, 0, 255, 0.3),
+      inset 0 0 25px rgba(255, 255, 255, 0.15);
+  }
 }
 
 @keyframes fade-in {
@@ -211,6 +243,12 @@
     font-size: 2.5rem;
   }
 
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+    margin-bottom: 25px;
+  }
+
   .about-button {
     font-size: 1rem;
     padding: 10px 20px;
@@ -230,6 +268,12 @@
 @media (max-width: 480px) {
   .name-title {
     font-size: 2rem;
+  }
+
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+    margin-bottom: 20px;
   }
 
   .about-dropdown {

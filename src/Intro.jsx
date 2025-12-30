@@ -8,6 +8,11 @@ export default function Intro({ onEnter }) {
     <div className="intro-container">
       <div className="intro-content">
         <h1 className="name-title">Alex Paseka</h1>
+        <img 
+          src="/avi.jpg" 
+          alt="Alex Paseka" 
+          className="profile-pic"
+        />
         
         <div className="about-section">
           <button 
