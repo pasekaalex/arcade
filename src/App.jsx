@@ -4,6 +4,7 @@ import SpaceInvaders from './games/SpaceInvaders'
 import HighwayRacer from './games/HighwayRacer'
 import Chess from './games/Chess'
 import Tetris from './games/Tetris'
+import IsometricCity from './games/IsometricCity'
 import './App.css'
 
 const GAMES = [
@@ -50,6 +51,15 @@ const GAMES = [
     component: Tetris,
     color: '#00f5ff',
     difficulty: 'Medium',
+    players: '1'
+  },
+  {
+    id: 'isometric-city',
+    name: '🏙️ City Builder',
+    description: 'Build your dream isometric city!',
+    component: IsometricCity,
+    color: '#2ecc71',
+    difficulty: 'Relaxing',
     players: '1'
   }
 ]
