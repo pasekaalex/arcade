@@ -75,12 +75,6 @@ function App() {
   })
 
   useEffect(() => {
-    // Check if user has seen intro before
-    const hasSeenIntro = localStorage.getItem('hasSeenIntro')
-    if (hasSeenIntro === 'true') {
-      setShowIntro(false)
-    }
-    
     // Load stats from localStorage
     const savedStats = localStorage.getItem('arcadeStats')
     if (savedStats) {
@@ -94,7 +88,6 @@ function App() {
 
   const handleEnterArcade = () => {
     setShowIntro(false)
-    localStorage.setItem('hasSeenIntro', 'true')
   }
 
   const handleBackToIntro = () => {
