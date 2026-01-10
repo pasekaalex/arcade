@@ -6,6 +6,7 @@ import HighwayRacer from './games/HighwayRacer'
 import Chess from './games/Chess'
 import Tetris from './games/Tetris'
 import IsometricCity from './games/IsometricCity'
+import SpaceShooter from './games/SpaceShooter'
 import './App.css'
 
 const GAMES = [
@@ -61,6 +62,15 @@ const GAMES = [
     component: IsometricCity,
     color: '#2ecc71',
     difficulty: 'Relaxing',
+    players: '1'
+  },
+  {
+    id: 'space-shooter',
+    name: '🌙 Space Shooter',
+    description: '3D space combat against asteroids!',
+    component: SpaceShooter,
+    color: '#00aaff',
+    difficulty: 'Medium',
     players: '1'
   }
 ]

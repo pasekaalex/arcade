@@ -1,0 +1,208 @@
+.space-shooter-container {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: #000;
+}
+
+.space-shooter-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+.space-shooter-start {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.8);
+  padding: 40px;
+  border-radius: 20px;
+  border: 2px solid rgba(0, 170, 255, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.space-shooter-start h1 {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #00aaff, #00ffff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.space-shooter-start p {
+  font-size: 1.2rem;
+  margin: 10px 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.start-button {
+  margin-top: 30px;
+  padding: 15px 40px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  color: #000;
+  background: linear-gradient(135deg, #00aaff, #00ffff);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.5);
+}
+
+.start-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(0, 170, 255, 0.7);
+}
+
+.space-shooter-ui {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.ui-stat {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 1px solid rgba(0, 170, 255, 0.3);
+  backdrop-filter: blur(10px);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.stat-label {
+  color: #00aaff;
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.stat-value {
+  color: #fff;
+  font-weight: 700;
+  font-size: 1.1rem;
+}
+
+.health-bar {
+  width: 150px;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin: 0 10px;
+}
+
+.health-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #00ff00, #ffff00, #ff0000);
+  transition: width 0.3s ease;
+  border-radius: 4px;
+}
+
+.space-shooter-gameover {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  color: #fff;
+  z-index: 100;
+  background: rgba(0, 0, 0, 0.9);
+  padding: 40px;
+  border-radius: 20px;
+  border: 2px solid rgba(255, 0, 0, 0.5);
+  backdrop-filter: blur(10px);
+}
+
+.space-shooter-gameover h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+  color: #ff0000;
+}
+
+.space-shooter-gameover p {
+  font-size: 1.5rem;
+  margin: 15px 0;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.restart-button {
+  margin-top: 20px;
+  padding: 12px 30px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #000;
+  background: linear-gradient(135deg, #00aaff, #00ffff);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.restart-button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.5);
+}
+
+.mobile-space-controls {
+  position: fixed;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 100;
+}
+
+.mobile-shoot-btn {
+  padding: 15px 40px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #000;
+  background: linear-gradient(135deg, #00aaff, #00ffff);
+  border: none;
+  border-radius: 50px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(0, 170, 255, 0.5);
+  touch-action: manipulation;
+}
+
+.mobile-shoot-btn:active {
+  transform: scale(0.95);
+  background: linear-gradient(135deg, #0088cc, #00cccc);
+}
+
+@media (max-width: 768px) {
+  .space-shooter-start {
+    padding: 30px 20px;
+    width: 90%;
+    max-width: 400px;
+  }
+
+  .space-shooter-start h1 {
+    font-size: 2rem;
+  }
+
+  .space-shooter-start p {
+    font-size: 1rem;
+  }
+
+  .ui-stat {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+
+  .health-bar {
+    width: 100px;
+  }
+}
+
