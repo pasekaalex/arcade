@@ -1612,11 +1612,13 @@ export default function Intro() {
               </div>
               <div className="about-info">
                 <h2 className="about-name">Alex Paseka</h2>
-                <p className="about-role">Developer & Blockchain Enthusiast</p>
+                <p className="about-role">Developer &amp; Blockchain Enthusiast</p>
+                <p className="about-business"><span className="biz-mark">VYVWORKS</span><span className="biz-note">software &amp; AI automation</span></p>
                 <div className="about-divider" />
                 <p className="about-bio">
-                  Passionate about building scalable web applications and exploring the intersection of 
-                  Web3 and modern software architecture. I love turning complex problems into elegant solutions.
+                  I run VYVWORKS, building software and AI automation &mdash; web apps, autonomous
+                  agents, and systems that run themselves. Web3 and modern architecture are where I
+                  spend most of my time turning complex problems into things that actually ship.
                 </p>
                 <div className="about-education">
                   <span className="edu-icon">🎓</span>

@@ -4019,3 +4019,15 @@ button:active:not(:disabled) {
   0%, 100% { opacity: 0.5; }
   50% { opacity: 1; }
 }
+
+/* VYVWORKS — the business line under the role. Deliberately quiet: it is a
+   credential, not a billboard, and the desktop chrome is the star here. */
+.about-business{
+  display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+  margin-top:6px; font-size:12px; letter-spacing:.5px;
+}
+.biz-mark{
+  font-weight:700; letter-spacing:2px; padding:2px 8px; border-radius:4px;
+  border:1px solid currentColor; opacity:.9;
+}
+.biz-note{ opacity:.65; letter-spacing:.3px; }
