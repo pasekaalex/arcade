@@ -11,6 +11,20 @@ const DESKTOP_ICONS = [
 // Projects data
 const PROJECTS = [
   {
+    name: 'Solscape',
+    img: 'https://play.solscape.fun/solscape-social-preview.jpg',
+    url: 'https://play.solscape.fun',
+    // No github key: the repo is private, so the button would 404 for visitors.
+    desc: 'Original browser MMO — skills, quests, trading and PvP'
+  },
+  {
+    name: '$SANIC',
+    img: 'https://www.sanic.fun/media/sanic-og.jpg',
+    url: 'https://sanic.fun',
+    github: 'https://github.com/pasekaalex/sanic-run',
+    desc: 'Three.js coin runner with original Blender assets'
+  },
+  {
     name: 'Bob Pants',
     img: '/spongebob.png',
     url: 'https://www.cockpants.lol',
@@ -100,6 +114,24 @@ export default function Intro() {
     { type: 'output', text: '' },
   ])
   const [terminalInput, setTerminalInput] = useState('')
+
+  // Terminal games and command history. These were dropped by an unrelated CSS
+  // cleanup, which left them referenced but never declared -- the resulting
+  // `ReferenceError: guessNumber is not defined` threw during render and took
+  // the whole desktop down to a blank page.
+  const [terminalCommandHistory, setTerminalCommandHistory] = useState([])
+  const [terminalHistoryIndex, setTerminalHistoryIndex] = useState(-1)
+  const [guessNumber, setGuessNumber] = useState(null)
+  const [guessAttempts, setGuessAttempts] = useState(0)
+  const [pokerDice, setPokerDice] = useState([1, 1, 1, 1, 1])
+  const [pokerKept, setPokerKept] = useState([false, false, false, false, false])
+  const [pokerRolls, setPokerRolls] = useState(0)
+  const [highLowCard, setHighLowCard] = useState(null)
+  const [highLowPrev, setHighLowPrev] = useState(null)
+  const [highLowWins, setHighLowWins] = useState(0)
+  const [wordleWord, setWordleWord] = useState('')
+  const [wordleGuesses, setWordleGuesses] = useState([])
+  const [wordleDone, setWordleDone] = useState(false)
   const [arcadeGame, setArcadeGame] = useState(null) // null | 'snake' | 'memory'
   const [arcadeHiScore, setArcadeHiScore] = useState(() => parseInt(localStorage.getItem('arcadeHiScore') || '0'))
 
